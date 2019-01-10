@@ -3,6 +3,7 @@ const should = require('should')
 const app = require('./index')
 
 var sendData = { username: 'kihong', email: 'email@email.com' }
+
 var jwt = 'init'
 
 describe('POST /api/encode', () => {
@@ -18,16 +19,10 @@ describe('POST /api/encode', () => {
         done();
       })
   })
-  // it('200을 응답한다', (done) => {
-  //   request(app)
-  //     .post('/api/encode')
-  //     .expect(200)
-  //     .end(done)
-  // })
 })
 
 describe('GET /api/decode/:jwt', () => {
-  it('raw data를 반환한다', (done) => {
+  it('username, email을 포함한 raw data를 반환한다', (done) => {
     console.log('GET /api/decode/jwt', jwt)
     request(app)
       .get(`/api/decode/${jwt}`)
@@ -39,12 +34,6 @@ describe('GET /api/decode/:jwt', () => {
         done();
       })
   })
-  // it('200을 응답한다', (done) => {
-  //   request(app)
-  //     .get(`/api/decode/${jwt}`)
-  //     .expect(200)
-  //     .end(done)
-  // })
 })
 
 // describe('DELETE /api/destroy/:jwt', () => {

@@ -30,6 +30,7 @@ app.post('/api/encode', (req, res) => {
 
 app.get('/api/decode/:jwt', (req, res) => {
   console.log('params', req.params.jwt)
+
   jwt.verify(req.params.jwt, SECRETKEY_FOR_JWT, (err, decoded) => {
     console.log('decoded', decoded.input)
     res.json(decoded.input)
