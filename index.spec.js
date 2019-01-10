@@ -36,20 +36,14 @@ describe('GET /api/decode/:jwt', () => {
   })
 })
 
-// describe('DELETE /api/destroy/:jwt', () => {
-//   console.log('DELETE /api/destroy/:jwt', jwt)
-//   it('jwt를 삭제한다', (done) => {
-//     request(app)
-//       .get(`/api/encode/${jwt}`)
-//       .end((err, res) => {
-//         console.log('res', res.body)
-//         done();
-//       })
-//   })
-//   it('200을 응답한다', (done) => {
-//     request(app)
-//       .get(`/api/encode/${jwt}`)
-//       .expect(200)
-//       .end(done)
-//   })
-// })
+describe('DELETE /api/destroy/:jwt', () => {
+  console.log('DELETE /api/destroy/:jwt', jwt)
+  it('jwt를 삭제한다', (done) => {
+    request(app)
+      .delete(`/api/destroy/${jwt}`)
+      .expect(200)
+      .end((err, res) => {
+        done();
+      })
+  })
+})

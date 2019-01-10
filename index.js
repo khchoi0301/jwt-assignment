@@ -23,7 +23,7 @@ app.post('/api/encode', (req, res) => {
 
   jwt.sign({ input }, SECRETKEY_FOR_JWT, { expiresIn: '1h' }, (err, token) => {
     req.session[token] = true
-    console.log('session', req.session)
+    console.log('session1', req.session)
     res.json({ token })
   })
 })
@@ -40,7 +40,10 @@ app.get('/api/decode/:jwt', (req, res) => {
 
 
 app.delete('/api/destroy/:jwt', (req, res) => {
-
+  console.log('session2', req.session)
+  delete req.session[req.params.jwt]
+  console.log('session3', req.session)
+  res.end()
 })
 
 app.listen(port, () => {
