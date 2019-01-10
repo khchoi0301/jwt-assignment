@@ -4,47 +4,53 @@ var bodyparser = require('body-parser')
 var jwt = require('jsonwebtoken')
 var session = require('express-session')
 
-const SECRETKEY_FOR_JWT = 'SeCrEtKeY'
 const port = 3000
+const SECRETKEY_FOR_JWT = 'SeCrEtKeY'
 
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended: false }))
-
 app.use(session({
   secret: 'secret',
   resave: false,
   saveUninitialized: true
 }))
 
-console.log('==================')
+const checkValue = (req, res, next) => {
+  if (!Object.keys(req.body).length && !Object.keys(req.params).length) {
+    res.status(404).json({ messsage: 'err' })
+  } else {
+    next()
+  }
+}
 
-app.post('/api/encode', (req, res) => {
-  const input = req.body
-
-  jwt.sign({ input }, SECRETKEY_FOR_JWT, { expiresIn: '1h' }, (err, token) => {
+let api = {
+  encode: async (req, res) => {
+    const input = req.body
+    const token = await jwt.sign({ input }, SECRETKEY_FOR_JWT, { expiresIn: '1h' })
     req.session[token] = true
-    console.log('session1', req.session)
     res.json({ token })
-  })
-})
+  },
+  decode: async (req, res) => {
+    try {
+      const decoded = await jwt.verify(req.params.jwt, SECRETKEY_FOR_JWT).input
+      res.json(decoded)
+    } catch (err) {
+      res.status(404).json({ messsage: 'err' })
+    }
+  },
+  destroy: (req, res) => {
+    if (req.session[req.params.jwt]) {
+      delete req.session[req.params.jwt]
+      res.json({ message: 'deleted' })
+    } else {
+      res.status(404).json({ messsage: 'err' })
+    }
+  }
+}
 
-app.get('/api/decode/:jwt', (req, res) => {
-  console.log('params', req.params.jwt)
-
-  jwt.verify(req.params.jwt, SECRETKEY_FOR_JWT, (err, decoded) => {
-    console.log('decoded', decoded.input)
-    res.json(decoded.input)
-  })
-
-})
-
-
-app.delete('/api/destroy/:jwt', (req, res) => {
-  console.log('session2', req.session)
-  delete req.session[req.params.jwt]
-  console.log('session3', req.session)
-  res.end()
-})
+app.post('/api/encode', checkValue, api.encode)
+app.get('/api/decode/:jwt', checkValue, api.decode)
+app.delete('/api/destroy/:jwt', checkValue, api.destroy)
 
 app.listen(port, () => {
   console.log(`server is listen on ${port} port`)
